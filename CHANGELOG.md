@@ -12,8 +12,14 @@
 - Improved UI integration for the sidebar panel.
 - Ensured that the status bar updates correctly when the selection changes.
 
-## [1.1.0]
+## [1.2.0]
 
 ### Fixed
 
 - **Word & Character Counter:** Now ignores HTML tags and only counts the text contents.
+
+## [1.3.0]
+
+### Added
+
+- **Create Wochenbericht** - You can now create a new weekly report really fast with just one click.
