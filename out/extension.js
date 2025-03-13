@@ -151,14 +151,23 @@ class SidebarProvider {
 }
 // Funktion zum Berechnen der Datumswerte für die Tagesreflexionen
 function getFormattedDatesForWeek(weekNumber, year) {
+    // ISO 8601 Wochensystem: Der erste Montag des Jahres
     const firstDayOfYear = new Date(year, 0, 1);
-    const daysToAdd = (weekNumber - 1) * 7;
-    const weekStart = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + daysToAdd));
+    // Berechne den Tag der Woche für den 1. Januar
+    const dayOfWeek = firstDayOfYear.getDay();
+    // Wenn der 1. Januar auf ein Sonntag fällt, dann müssen wir den ersten Montag am 2. Januar suchen
+    const daysToFirstMonday = (dayOfWeek === 0 ? 1 : 1 - dayOfWeek);
+    // Setze das Datum auf den ersten Montag des Jahres
+    firstDayOfYear.setDate(firstDayOfYear.getDate() + daysToFirstMonday);
+    // Berechne den Montag der gewünschten Kalenderwoche
+    const weekStart = new Date(firstDayOfYear);
+    weekStart.setDate(weekStart.getDate() + (weekNumber - 1) * 7); // Wochenoffset
     const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
     const months = [
         'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
     ];
+    // Erstelle die HTML-Tags für jeden Wochentag
     return days.map((day, index) => {
         const date = new Date(weekStart);
         date.setDate(date.getDate() + index);

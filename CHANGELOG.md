@@ -31,3 +31,7 @@
 ### [1.4.1]
 
 - **Creating folder .easy-commit** - Automaticly creates the folder `.easy-commit` when a new weekly report is being created, but the folder does not exist.
+
+### [1.4.2]
+
+- **Wrong Date** - The dates of the daily reflexions were calculated wrong.
