@@ -4,10 +4,10 @@
   "description": "",
   "publisher": "Kalbskinder",
   "icon": "images/logo.jpg",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "repository": {
-  "type": "git",
-  "url": "https://github.com/Kalbskinder/VSCode-Extension-Wochenbericht-Helper"
+    "type": "git",
+    "url": "https://github.com/Kalbskinder/VSCode-Extension-Wochenbericht-Helper"
   },
   "engines": {
     "vscode": "^1.98.0"
