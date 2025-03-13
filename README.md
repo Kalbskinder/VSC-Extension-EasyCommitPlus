@@ -1,6 +1,7 @@
 # Wochenbericht Helper
 
 A tool that helps you create your weekly reports faster.
+You can find the sourcecode to this project [here](https://github.com/Kalbskinder/VSCode-Extension-Wochenbericht-Helper?tab=readme-ov-file).
 
 ## Features
 

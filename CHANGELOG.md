@@ -35,3 +35,7 @@
 ### [1.4.2]
 
 - **Wrong Date** - The dates of the daily reflexions were calculated wrong.
+
+### [1.4.3]
+
+- **Linked Github** - The code is now linked in the documentation and is available for everybody.
