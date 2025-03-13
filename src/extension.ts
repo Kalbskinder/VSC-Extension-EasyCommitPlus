@@ -88,8 +88,8 @@ export function activate(context: vscode.ExtensionContext) {
         // Template einlesen und anpassen
         let templateContent = fs.readFileSync(templatePath, 'utf8');
         templateContent = templateContent
-            .replace(/Wochenbericht KW\d+ \d{4}/g, `Wochenbericht KW${weekNumber} ${year}`)
-            .replace(
+        .replace(/Wochenbericht KW[^ ]+ \d{4}/g, `Wochenbericht KW${weekNumber} ${year}`)
+        .replace(
                 /<h2>Tagesreflexionen<\/h2>[\s\S]*?(?=<h2>|$)/, 
                 `<h2>Tagesreflexionen</h2>\n${getFormattedDatesForWeek(parseInt(weekNumber), year)}`
             );

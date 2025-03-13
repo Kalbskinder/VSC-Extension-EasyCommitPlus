@@ -22,4 +22,8 @@
 
 ### Added
 
-- **Create Wochenbericht** - You can now create a new weekly report really fast with just one click.
+- **Create Wochenbericht** You can now create a new weekly report really fast with just one click.
+
+## [1.4.0]
+
+- **Bug Fixes** Replacing the calendar week is now more efficient
