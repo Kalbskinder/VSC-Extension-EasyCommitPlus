@@ -53,8 +53,15 @@ function activate(context) {
         let selection = editor.selection;
         let text = editor.document.getText(selection);
         if (text.length > 0) {
-            let wordCount = text.trim().split(/\s+/).length;
-            let charCount = text.length;
+            // HTML-Tags mit Regex entfernen
+            let cleanText = text
+                .replace(/\n/g, " ") // Zeilenumbrüche durch Leerzeichen ersetzen
+                .replace(/>\s+</g, "> <") // Leerzeichen zwischen HTML-Tags hinzufügen!
+                .replace(/<\/?[^>]+(>|$)/g, "") // HTML-Tags entfernen
+                .replace(/\s+/g, " ") // Mehrere Leerzeichen in eines umwandeln
+                .trim();
+            let wordCount = cleanText.trim().split(/\s+/).filter(word => word.length > 0).length;
+            let charCount = cleanText.length;
             statusBar.text = `$(pencil) ${charCount} Zeichen, ${wordCount} Wörter`;
             statusBar.show();
         }

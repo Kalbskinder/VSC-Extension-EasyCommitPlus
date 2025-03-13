@@ -11,3 +11,9 @@
 
 - Improved UI integration for the sidebar panel.
 - Ensured that the status bar updates correctly when the selection changes.
+
+## [1.1.0]
+
+### Fixed
+
+- **Word & Character Counter:** Now ignores HTML tags and only counts the text contents.
