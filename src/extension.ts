@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Befehl zum Erstellen eines neuen Wochenberichts
     const createWeeklyReportCommand = vscode.commands.registerCommand('extension.createWeeklyReport', async () => {
-        const input = await vscode.window.showInputBox({ prompt: 'Gib die Kalenderwoche ein' });
+        const input = await vscode.window.showInputBox({ prompt: 'Gib die Kalenderwoche ein (z.B. 12)' });
         if (!input) {
             vscode.window.showErrorMessage("Keine Kalenderwoche eingegeben!");
             return;
