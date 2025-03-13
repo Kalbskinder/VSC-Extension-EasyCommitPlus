@@ -27,3 +27,7 @@
 ## [1.4.0]
 
 - **Bug Fixes** Replacing the calendar week is now more efficient
+
+## [1.5.0]
+
+- **Creating folder .easy-commit** - Automaticly creates the folder `.easy-commit` when a new weekly report is being created, but the folder does not exist.

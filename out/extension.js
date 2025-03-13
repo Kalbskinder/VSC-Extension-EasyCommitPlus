@@ -102,6 +102,11 @@ function activate(context) {
             vscode.window.showErrorMessage("Kein geöffnetes Projekt gefunden!");
             return;
         }
+        const easyCommitFolder = path.join(workspaceFolder, '.easy-commit');
+        if (!fs.existsSync(easyCommitFolder)) {
+            fs.mkdirSync(easyCommitFolder);
+            console.log('.easy-commit Ordner wurde erstellt');
+        }
         const templatePath = path.join(workspaceFolder, '.easy-commit', 'template.html');
         const newFilePath = path.join(workspaceFolder, fileName);
         if (!fs.existsSync(templatePath)) {
