@@ -13,11 +13,15 @@ Push your weekly report to Github with just one click.
 
 ![Commit message](/images/docs/commit-msg.png)
 
+---
+
 ### Word and Char counter
 
 Select text to check the char and word count.
 
 ![Selection img](/images/docs/selection.png)
+
+---
 
 ### Create Wochenbericht by template
 

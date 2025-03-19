@@ -39,3 +39,8 @@
 ### [1.4.3]
 
 - **Linked Github** - The code is now linked in the documentation and is available for everybody.
+
+### [1.4.4]
+
+- **Fixed Location** - The location in the daily reflecions is no longer being overwritten to "BBW"
+- **info.md** - A info.md file automaticly gets created when the user creates a new file.

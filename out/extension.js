@@ -38,6 +38,29 @@ exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const mdInfoContent = `# Easy Commit +
+
+Easy Commit + is a VSCode Extension that lets you commit changes to GitHub with just one click.
+
+## Features
+
+### One-Click Commit
+
+Push your weekly report to Github with just one click.
+
+---
+
+### Word and Char counter
+
+Select text to check the char and word count.
+
+
+---
+
+### Create Wochenbericht by template
+
+You can rename your weekly report template to \`template.html\` and put it in the folder \`.easy-commit\`. You can then use the button in the sidebar to create a new weekly report with just the calendar week.
+`;
 function activate(context) {
     // Statusbar für Zeichen- und Wortzählung
     let statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -103,9 +126,12 @@ function activate(context) {
             return;
         }
         const easyCommitFolder = path.join(workspaceFolder, '.easy-commit');
+        const infoFile = path.join(easyCommitFolder, 'info.md');
         if (!fs.existsSync(easyCommitFolder)) {
             fs.mkdirSync(easyCommitFolder);
-            console.log('.easy-commit Ordner wurde erstellt');
+        }
+        if (!fs.existsSync(infoFile)) {
+            fs.writeFileSync(infoFile, mdInfoContent, 'utf8');
         }
         const templatePath = path.join(workspaceFolder, '.easy-commit', 'template.html');
         const newFilePath = path.join(workspaceFolder, fileName);
@@ -173,7 +199,8 @@ function getFormattedDatesForWeek(weekNumber, year) {
         date.setDate(date.getDate() + index);
         const dayNumber = date.getDate();
         const monthName = months[date.getMonth()];
-        return `<strong>BBW, ${day}, ${dayNumber}. ${monthName} ${year}</strong><br>\nTagesreflektion (min. 200 und max. 500 Zeichen)\n<hr>`;
+        const location = index < 2 ? "BBW" : "ZLI";
+        return `<strong>${location}, ${day}, ${dayNumber}. ${monthName} ${year}</strong><br>\nTagesreflektion (min. 200 und max. 500 Zeichen)\n<hr>`;
     }).join("\n");
 }
 function deactivate() { }
