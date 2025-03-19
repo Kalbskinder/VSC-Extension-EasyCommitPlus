@@ -4,7 +4,7 @@
   "description": "",
   "publisher": "Kalbskinder",
   "icon": "images/logo.jpg",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/Kalbskinder/VSCode-Extension-Wochenbericht-Helper"
