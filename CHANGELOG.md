@@ -44,3 +44,8 @@
 
 - **Fixed Location** - The location in the daily reflecions is no longer being overwritten to "BBW"
 - **info.md** - A info.md file automaticly gets created when the user creates a new file.
+
+### [1.5.0]
+
+- **Layout** - Reworked the layout in the sidebar
+- **New Features** - Added Commit count and badges for commit count milestones. Added specific file commit and commit all changes besides commit & push

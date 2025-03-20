@@ -25,7 +25,7 @@
       "activitybar": [
         {
           "id": "textCounterViewContainer",
-          "title": "Wochenbericht Helper",
+          "title": "Easy Commit +",
           "icon": "images/logo-transparent.png"
         }
       ]
@@ -34,7 +34,7 @@
       "textCounterViewContainer": [
         {
           "id": "textCounterPanel",
-          "name": "Wochenbericht Helper"
+          "name": "Easy Commit +"
         }
       ]
     },
@@ -42,6 +42,14 @@
       {
         "command": "extension.openGitCommitPanel",
         "title": "Open Git Commit Panel"
+      },
+      {
+        "command": "extension.openGitSignleCommit",
+        "title": "Single Commit"
+      },
+      {
+        "command": "extension.openGitSelectedFileCommit",
+        "title": "Commit Selected File"
       }
     ]
   },

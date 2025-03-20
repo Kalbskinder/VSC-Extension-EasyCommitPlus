@@ -7,11 +7,9 @@ You can find the sourcecode to this project [here](https://github.com/Kalbskinde
 
 ### One-Click Commit
 
-Push your weekly report to Github with just one click.
-
-![Oneclick Commit](/images/docs/commit.png)
-
-![Commit message](/images/docs/commit-msg.png)
+- Commit all files with a commit message.
+- Commit specific files with a commit message.
+- Commit & push all files with a commit message.
 
 ---
 

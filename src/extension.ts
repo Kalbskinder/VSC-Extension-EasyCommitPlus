@@ -10,7 +10,10 @@ Easy Commit + is a VSCode Extension that lets you commit changes to GitHub with 
 
 ### One-Click Commit
 
-Push your weekly report to Github with just one click.
+- Commit all files with a commit message.
+- Commit specific files with a commit message.
+- Commit & push all files with a commit message.
+
 
 ---
 
@@ -25,6 +28,13 @@ Select text to check the char and word count.
 
 You can rename your weekly report template to \`template.html\` and put it in the folder \`.easy-commit\`. You can then use the button in the sidebar to create a new weekly report with just the calendar week.
 `
+
+const badges = [
+    { count: 0, name: "🪙" },
+    { count: 10, name: "🚀" },
+    { count: 50, name: "🔥" },
+    { count: 100, name: "🏆" }
+];
 
 export function activate(context: vscode.ExtensionContext) {
     // Statusbar für Zeichen- und Wortzählung
@@ -42,10 +52,10 @@ export function activate(context: vscode.ExtensionContext) {
             statusBar.hide();
             return;
         }
-    
+
         let selection = editor.selection;
         let text = editor.document.getText(selection);
-    
+
         if (text.length > 0) {
             // Remove HTML tags
             let cleanText = text
@@ -56,14 +66,14 @@ export function activate(context: vscode.ExtensionContext) {
                 .trim();
             let wordCount = cleanText.trim().split(/\s+/).filter(word => word.length > 0).length;
             let charCount = cleanText.length;
-    
+
             statusBar.text = `$(pencil) ${charCount} Zeichen, ${wordCount} Wörter`;
             statusBar.show();
         } else {
             statusBar.hide();
         }
     }
-    
+
     updateStatusBar();
 
     // Sidebar hinzufügen
@@ -72,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Befehl für den Button: Git Commit
     const openGitCommitPanelCommand = vscode.commands.registerCommand('extension.openGitCommitPanel', () => {
-        vscode.window.showInputBox({ prompt: 'Enter your Git Commit message' }).then(commitMessage => {
+        vscode.window.showInputBox({ prompt: 'Enter your Git Commit message' }).then(async commitMessage => {
             if (commitMessage) {
                 const terminal = vscode.window.createTerminal("Git Commit");
                 terminal.show();
@@ -80,8 +90,61 @@ export function activate(context: vscode.ExtensionContext) {
                 terminal.sendText(`git commit -m \"${commitMessage}\"`);
                 terminal.sendText("git push --set-upstream origin $(git branch --show-current)");
             }
+            await checkForBadges(context);
         });
     });
+
+    const openGitSignleCommitPanelCommand = vscode.commands.registerCommand('extension.openGitSignleCommit', () => {
+        vscode.window.showInputBox({ prompt: 'Enter your Git Commit message' }).then(async commitMessage => {
+            if (commitMessage) {
+                const terminal = vscode.window.createTerminal("Git Commit");
+                terminal.show();
+                terminal.sendText("git add .");
+                terminal.sendText(`git commit -m \"${commitMessage}\"`);
+            }
+            await checkForBadges(context);
+        });
+    });
+
+    const openGitSelectedFileCommit = vscode.commands.registerCommand('extension.openGitSelectedFileCommit', () => {
+        vscode.window.showInputBox({ 
+            prompt: 'Enter all files (index.html, main.js)' 
+        }).then(async fileInput => {
+            if (!fileInput) {
+                vscode.window.showErrorMessage("No files provided.");
+                return;
+            }
+    
+            const selectedFiles = fileInput.split(',')
+                .map(file => file.trim())
+                .filter(file => file.length > 0)
+                .join(' ');
+    
+            if (selectedFiles.length === 0) {
+                vscode.window.showErrorMessage("No valid files provided.");
+                return;
+            }
+    
+            // Commit-Message abfragen
+            const commitMessage = await vscode.window.showInputBox({ prompt: 'Enter commit message' });
+            if (!commitMessage) {
+                vscode.window.showErrorMessage("Commit message cannot be empty.");
+                return;
+            }
+    
+            // 🖥️ Terminal-Befehl ausführen
+            const terminal = vscode.window.createTerminal("Git Commit");
+            terminal.show();
+            terminal.sendText(`git add ${selectedFiles}`);
+            terminal.sendText(`git commit -m "${commitMessage}"`);
+    
+            // ✅ Badges prüfen
+            await checkForBadges(context);
+        });
+    });
+    
+
+    
 
     // Befehl zum Erstellen eines neuen Wochenberichts
     const createWeeklyReportCommand = vscode.commands.registerCommand('extension.createWeeklyReport', async () => {
@@ -104,7 +167,7 @@ export function activate(context: vscode.ExtensionContext) {
         const easyCommitFolder = path.join(workspaceFolder, '.easy-commit');
         const infoFile = path.join(easyCommitFolder, 'info.md');
 
-        
+
         if (!fs.existsSync(easyCommitFolder)) {
             fs.mkdirSync(easyCommitFolder);
         }
@@ -124,12 +187,12 @@ export function activate(context: vscode.ExtensionContext) {
         // Template einlesen und anpassen
         let templateContent = fs.readFileSync(templatePath, 'utf8');
         templateContent = templateContent
-        .replace(/Wochenbericht KW[^ ]+ \d{4}/g, `Wochenbericht KW${weekNumber} ${year}`)
-        .replace(
-                /<h2>Tagesreflexionen<\/h2>[\s\S]*?(?=<h2>|$)/, 
+            .replace(/Wochenbericht KW[^ ]+ \d{4}/g, `Wochenbericht KW${weekNumber} ${year}`)
+            .replace(
+                /<h2>Tagesreflexionen<\/h2>[\s\S]*?(?=<h2>|$)/,
                 `<h2>Tagesreflexionen</h2>\n${getFormattedDatesForWeek(parseInt(weekNumber), year)}`
             );
-            
+
         fs.writeFileSync(newFilePath, templateContent, 'utf8');
         vscode.window.showInformationMessage(`Neuer Wochenbericht erstellt: ${fileName}`);
 
@@ -141,6 +204,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(openGitCommitPanelCommand);
+    context.subscriptions.push(openGitSignleCommitPanelCommand);
     context.subscriptions.push(createWeeklyReportCommand);
 }
 
@@ -150,22 +214,75 @@ class SidebarProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
         return element;
     }
 
-    getChildren(): vscode.TreeItem[] {
-        const commitButton = new vscode.TreeItem("Commit Wochenbericht", vscode.TreeItemCollapsibleState.None);
+    async getChildren(): Promise<vscode.TreeItem[]> {
+        // Gitbhub features
+
+
+        // Commit all changes
+        const commitButton = new vscode.TreeItem("Commit all changes", vscode.TreeItemCollapsibleState.None);
         commitButton.command = {
-            command: "extension.openGitCommitPanel",
+            command: "extension.openGitSignleCommit",
             title: "Open Git Commit Panel"
         };
-        commitButton.iconPath = new vscode.ThemeIcon('github');
+        commitButton.iconPath = new vscode.ThemeIcon('remote-explorer-documentation');
 
-        const createReportButton = new vscode.TreeItem("Neuen Wochenbericht erstellen", vscode.TreeItemCollapsibleState.None);
+
+        // Commit & Push all changes
+        const commitPushButton = new vscode.TreeItem("Commit & Push", vscode.TreeItemCollapsibleState.None);
+        commitPushButton.command = {
+            command: "extension.openGitCommitPanel",
+            title: "Single Commit"
+        };
+        commitPushButton.iconPath = new vscode.ThemeIcon('source-control-view-icon');
+
+
+        // Commit specific files
+        const commitSelectedFile = new vscode.TreeItem("Commit specific files", vscode.TreeItemCollapsibleState.None);
+        commitSelectedFile.command = {
+            command: "extension.openGitSelectedFileCommit",
+            title: "Commit Selected File"
+        };
+        commitSelectedFile.iconPath = new vscode.ThemeIcon('source-control-view-icon');
+
+
+        // Commit count
+        const commitCount = await getCommitCount();
+
+        const filteredBadges = badges.filter(b => commitCount >= b.count);
+        const badgeElement = filteredBadges.pop();
+
+        let commitDisplay;
+
+        if (badgeElement) {
+            const badgeIcon = badgeElement.name;
+            commitDisplay = new vscode.TreeItem(`[${badgeIcon}] Total commits: ${commitCount}`, vscode.TreeItemCollapsibleState.None);
+        } else {
+            commitDisplay = new vscode.TreeItem(`Total commits: ${commitCount}`, vscode.TreeItemCollapsibleState.None);
+        }
+
+        commitDisplay.iconPath = new vscode.ThemeIcon('star-full');
+
+
+        // Divider
+        const spacer = new vscode.TreeItem(" ", vscode.TreeItemCollapsibleState.None);
+
+
+        // Wochenbericht features
+        const createReportButton = new vscode.TreeItem("New weekly report", vscode.TreeItemCollapsibleState.None);
         createReportButton.command = {
             command: "extension.createWeeklyReport",
-            title: "Create Weekly Report"
+            title: "Create Weekly Report",
         };
         createReportButton.iconPath = new vscode.ThemeIcon('new-file');
 
-        return [commitButton, createReportButton];
+
+        return [commitButton, 
+            commitPushButton, 
+            commitSelectedFile, 
+            commitDisplay, 
+            spacer, 
+            createReportButton
+        ];
     }
 }
 
@@ -177,17 +294,17 @@ function getFormattedDatesForWeek(weekNumber: number, year: number,): string {
     const dayOfWeek = firstDayOfYear.getDay();
     // Wenn der 1. Januar auf ein Sonntag fällt, dann müssen wir den ersten Montag am 2. Januar suchen
     const daysToFirstMonday = (dayOfWeek === 0 ? 1 : 1 - dayOfWeek);
-    
+
     // Setze das Datum auf den ersten Montag des Jahres
     firstDayOfYear.setDate(firstDayOfYear.getDate() + daysToFirstMonday);
-    
+
     // Berechne den Montag der gewünschten Kalenderwoche
     const weekStart = new Date(firstDayOfYear);
     weekStart.setDate(weekStart.getDate() + (weekNumber - 1) * 7); // Wochenoffset
-    
+
     const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
     const months = [
-        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
     ];
 
@@ -199,13 +316,50 @@ function getFormattedDatesForWeek(weekNumber: number, year: number,): string {
         const dayNumber = date.getDate();
         const monthName = months[date.getMonth()];
 
-        const location = index < 2 ? "BBW" : "ZLI"; 
+        const location = index < 2 ? "BBW" : "ZLI";
 
         return `<strong>${location}, ${day}, ${dayNumber}. ${monthName} ${year}</strong><br>\nTagesreflektion (min. 200 und max. 500 Zeichen)\n<hr>`;
     }).join("\n");
 
 }
 
+/* ==========================================
+ * Commit badges
+ *=========================================== */
+
+async function getCommitCount(): Promise<number> {
+    return new Promise((resolve, reject) => {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+        if (!workspaceFolder) {
+            reject("Kein geöffnetes Projekt gefunden!");
+            return;
+        }
+
+        const exec = require('child_process').exec;
+        exec('git rev-list --count HEAD', { cwd: workspaceFolder }, (err: any, stdout: string) => {
+            if (err) {
+                reject("Fehler beim Abrufen der Commit-Anzahl.");
+            } else {
+                resolve(parseInt(stdout.trim(), 10));
+            }
+        });
+    });
+}
 
 
-export function deactivate() {}
+async function checkForBadges(context: vscode.ExtensionContext) {
+    const commitCount = await getCommitCount();
+    const lastBadge = context.globalState.get<number>("lastBadge", 0);
+
+    for (const badge of badges) {
+        if (commitCount >= badge.count && lastBadge < badge.count) {
+            vscode.window.showInformationMessage(`🎉 Glückwunsch! Du hast das Badge "${badge.name}" erhalten!`);
+            context.globalState.update("lastBadge", badge.count);
+            break; // Nur das erste neue Badge anzeigen
+        }
+    }
+}
+
+
+
+export function deactivate() { }
